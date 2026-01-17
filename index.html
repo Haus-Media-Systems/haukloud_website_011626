@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HausKloud | Escape the Cloud Trap</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <img src="images/HausKloud_Logo_v4_100925.jpg" alt="HausKloud" class="logo-img">
+            </a>
+            <div class="nav-links">
+                <a href="#problem">The Problem</a>
+                <a href="#solution">The Fix</a>
+                <a href="#calculator">Your Numbers</a>
+                <a href="calculator.html">Savings Calculator</a>
+                <a href="#pricing">Pricing</a>
+                <a href="mailto:gabe@haus.video?subject=HausKloud%20Discovery%20Call" class="nav-cta">Book a Call</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section - Sharp, Decision-Forcing -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Your Cloud Archive Is <span class="gradient-text">Bleeding Money</span></h1>
+            <p class="hero-subtitle">Every month you wait, egress fees compound. Storage costs climb.<br>The archive you're building today becomes the budget crisis of next year.</p>
+            <p class="hero-qualifier">If you're ingesting at 50TB/month, your 2026 budget is already broken.</p>
+            <div class="hero-ctas">
+                <a href="mailto:gabe@haus.video?subject=HausKloud%20Discovery%20Call" class="btn btn-primary btn-large">Book a Discovery Call</a>
+            </div>
+            <p class="hero-subtext">No deck. No pitch. Just your numbers and ours.</p>
+        </div>
+    </section>
+
+    <!-- ICP Block - Exclusionary -->
+    <section class="icp-section">
+        <div class="container">
+            <div class="icp-grid">
+                <div class="icp-card icp-yes">
+                    <h3>This is for you if:</h3>
+                    <ul>
+                        <li>Your cloud bill has <strong>already surprised you</strong></li>
+                        <li>You've felt the pain of <strong>egress fees blocking access</strong> to your own work</li>
+                        <li>You generate <strong>50+ TB per month</strong> of media</li>
+                        <li>You need archive that's <strong>searchable, not just stored</strong></li>
+                    </ul>
+                </div>
+                <div class="icp-card icp-no">
+                    <h3>This is NOT for you if:</h3>
+                    <ul>
+                        <li>You're under 20TB/month - we can't help you economically</li>
+                        <li>You are optimizing for monthly cost, not lifetime savings</li>
+                        <li>You want to manage storage yourself - we're done-for-you</li>
+                        <li>You need a quick fix - lifecycle change takes ~90 days</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problem Section - Make It Hurt -->
+    <section class="problem-section" id="problem">
+        <div class="container">
+            <h2 class="section-title">Here's What's Actually Happening</h2>
+
+            <div class="problem-stats">
+                <div class="problem-stat">
+                    <span class="stat-number">47%</span>
+                    <p>of cloud storage spend goes to <strong>fees</strong> - not actual storage</p>
+                </div>
+                <div class="problem-stat">
+                    <span class="stat-number">93%</span>
+                    <p>expect storage capacity to <strong>increase</strong> this year</p>
+                </div>
+                <div class="problem-stat">
+                    <span class="stat-number">90%</span>
+                    <p>expect storage budgets to <strong>grow</strong> - again</p>
+                </div>
+            </div>
+            <p class="problem-source">Source: <a href="https://wasabi.com/blog/industry-trends/2024-cloud-storage-index" target="_blank" rel="noopener">Wasabi 2024 Cloud Storage Index</a></p>
+
+            <div class="consequence-block">
+                <h3>The consequence nobody talks about:</h3>
+                <p>Teams stop accessing archives because <strong>retrieval costs more than the project budget</strong>. Assets rot. Reuse dies. You're paying to store files you can't afford to touch.</p>
+            </div>
+            <p class="verdict-label">Verdict</p>
+            <p class="verdict">That's not storage. That's <strong>ransom</strong>.</p>
+        </div>
+    </section>
+
+    <!-- Calculator as Diagnosis -->
+    <section class="calculator-section" id="calculator">
+        <div class="container">
+            <div class="calc-diagnosis">
+                <span class="calc-type-label">Quick Diagnosis</span>
+                <h2 class="section-title">Let's See Your Damage</h2>
+                <p class="calc-setup">Most teams don't realize their storage cost curve is exponential until it's too late. Plug in your numbers.</p>
+            </div>
+
+            <div class="calculator-embed">
+                <div class="calc-inputs">
+                    <div class="calc-input-group">
+                        <label>Monthly Data Generation</label>
+                        <input type="range" id="calcTB" min="20" max="100" value="50" step="10">
+                        <div class="range-display"><span id="calcTBValue">100</span> TB/month</div>
+                    </div>
+
+                    <div class="calc-input-group">
+                        <label>Current Setup</label>
+                        <select id="calcProvider">
+                            <option value="hyperscale">Hyperscale Cloud (AWS, Azure, GCP)</option>
+                            <option value="zeroegress">Zero-Egress Cloud (Backblaze, Wasabi)</option>
+                            <option value="onprem">On-Prem / Self-Managed</option>
+                        </select>
+                    </div>
+
+                    <div class="calc-input-group">
+                        <label>Time Horizon</label>
+                        <select id="calcYears">
+                            <option value="3">3 Years</option>
+                            <option value="5" selected>5 Years</option>
+                            <option value="10">10 Years</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="calc-results">
+                    <div class="calc-result current">
+                        <span class="result-label">Your Current Path</span>
+                        <span class="result-value" id="calcCurrentCost">$3.9M</span>
+                    </div>
+                    <div class="calc-result hauskloud">
+                        <span class="result-label">With HausKloud</span>
+                        <span class="result-value" id="calcHausKloudCost">$1.8M</span>
+                    </div>
+                </div>
+
+                <!-- When HausKloud saves money -->
+                <div class="calc-consequence" id="calcSavingsMessage">
+                    <div class="calc-savings-display">
+                        <span class="savings-label">You're leaving on the table:</span>
+                        <span class="savings-value" id="calcSavings">$2.1M</span>
+                        <span class="savings-percent" id="calcSavingsPercent">54% of your storage budget</span>
+                    </div>
+                    <p class="calc-consequence-text">At this trajectory, your archive becomes the most expensive line item in your operation - and the least accessible.</p>
+                    <p class="calc-time-pressure">This gap widens every month you delay.</p>
+                    <p class="calc-inevitability">Once archives reach this scale, reversing course gets harder - and more expensive.</p>
+                    <a href="calculator.html" class="btn btn-secondary btn-small">See Full Cost Model →</a>
+                </div>
+
+                <!-- When current setup is cheaper - they haven't hit the event horizon yet -->
+                <div class="calc-consequence calc-competitive" id="calcCompetitiveMessage" style="display: none;">
+                    <div class="calc-savings-display">
+                        <span class="savings-label competitive-label">You haven't crossed the event horizon — yet</span>
+                        <span class="savings-value competitive-value" id="calcDifference">$200K</span>
+                        <span class="savings-percent" id="calcDifferencePercent">less than HausKloud over this period</span>
+                    </div>
+                    <p class="calc-consequence-text">At this scale, your current setup still works. But the curve is exponential — and this math changes fast as you scale.</p>
+                    <p class="calc-competitive-pivot">When it flips — we'll be here.</p>
+                    <a href="calculator.html" class="btn btn-secondary btn-small">See Full Cost Model →</a>
+                </div>
+            </div>
+
+            <div class="calc-cta" id="calcCtaSavings">
+                <a href="mailto:info@haus.video?subject=HausKloud%20Discovery%+1-347-770-345320Call" class="btn btn-primary btn-large">Let's Talk About Your Numbers</a>
+            </div>
+            <div class="calc-cta" id="calcCtaCompetitive" style="display: none;">
+                <a href="mailto:info@haus.video?subject=HausKloud%20Discovery%20Call" class="btn btn-secondary btn-large">Still Curious? Let's Talk!</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Solution: Lifecycle -->
+    <section class="solution-section" id="solution">
+        <div class="container">
+            <h2 class="section-title">The Fix: <span class="gradient-text">Lifecycle Governance</span></h2>
+            <p class="section-subtitle">Cloud punishes accumulation. Lifecycle rewards intention.</p>
+
+            <div class="lifecycle-flow">
+                <div class="lifecycle-stage">
+                    <div class="stage-icon field">
+                        <svg viewBox="0 0 60 60" width="48" height="48">
+                            <circle cx="30" cy="30" r="24" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <rect x="22" y="20" width="16" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="30" cy="38" r="3" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h4>Field</h4>
+                    <p>Ingest with intent. Tag at capture.</p>
+                </div>
+
+                <div class="lifecycle-arrow">→</div>
+
+                <div class="lifecycle-stage">
+                    <div class="stage-icon cloud">
+                        <svg viewBox="0 0 60 60" width="48" height="48">
+                            <path d="M15 35 Q10 35 10 30 Q10 22 20 22 Q22 15 30 15 Q40 15 42 25 Q50 25 50 32 Q50 38 42 38 L18 38" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h4>Cloud</h4>
+                    <p>AI logging. Instant delivery. Short-term only.</p>
+                </div>
+
+                <div class="lifecycle-arrow">→</div>
+
+                <div class="lifecycle-stage">
+                    <div class="stage-icon nas">
+                        <svg viewBox="0 0 60 60" width="48" height="48">
+                            <rect x="10" y="15" width="40" height="30" rx="3" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="18" cy="25" r="3" fill="currentColor"/>
+                            <circle cx="30" cy="25" r="3" fill="currentColor"/>
+                            <circle cx="42" cy="25" r="3" fill="currentColor"/>
+                            <line x1="15" y1="35" x2="45" y2="35" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    <h4>NAS</h4>
+                    <p>24/7 access. No egress. Your working library.</p>
+                </div>
+
+                <div class="lifecycle-arrow">→</div>
+
+                <div class="lifecycle-stage">
+                    <div class="stage-icon lto">
+                        <svg viewBox="0 0 60 60" width="48" height="48">
+                            <rect x="10" y="20" width="40" height="20" rx="2" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="20" cy="30" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="40" cy="30" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <line x1="25" y1="30" x2="35" y2="30" stroke="currentColor" stroke-width="1"/>
+                        </svg>
+                    </div>
+                    <h4>LTO</h4>
+                    <p>30-year archive. Air-gapped. Immutable.</p>
+                </div>
+            </div>
+
+            <!-- HausTracker Callout -->
+            <div class="haustracker-callout">
+                <img src="images/HausTracker_Logo_101325_v2.jpg" alt="HausTracker" class="haustracker-logo">
+                <p>HausTracker powers every stage of the pipeline, creating a single source of truth for your assets as they move through the Infinite Storage Engine.</p>
+            </div>
+
+            <div class="solution-key-point">
+                <p><strong>The difference:</strong> Cloud charges you more the longer you store. Lifecycle moves assets to cheaper tiers automatically. Your 5-year cost flattens instead of compounds.</p>
+                <p class="solution-clarifier">We design this lifecycle, implement it with your team, and run it with you.</p>
+                <p class="solution-sequence">The first 30 days are about classification, not migration.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why It Works - 4 Points Max -->
+    <section class="why-section">
+        <div class="container">
+            <h2 class="section-title">Why This Works</h2>
+
+            <div class="why-grid">
+                <div class="why-card">
+                    <div class="why-number">01</div>
+                    <h3>Costs Are Set at Ingest</h3>
+                    <p>What happens in the first 24 hours determines your 5-year cost. We enforce storage class, redundancy, and retention at the moment of capture.</p>
+                    <p class="why-consequence">Miss this moment, and you never get it back.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-number">02</div>
+                    <h3>Cloud Bills Punish Indecision</h3>
+                    <p>Not choosing when to tier-down is a choice - and it's expensive. We automate tiering based on access patterns, not guesswork.</p>
+                    <p class="why-consequence">Every month you wait, premium rates compound.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-number">03</div>
+                    <h3>Search Breaks When Metadata Decays</h3>
+                    <p>An archive you can't search is just expensive storage. We refresh and normalize metadata as assets move through stages.</p>
+                    <p class="why-consequence">Lose findability, and your archive becomes a landfill.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-number">04</div>
+                    <h3>Deletion Is a Business Capability</h3>
+                    <p>Knowing what can be safely deleted is as important as knowing what to keep. We enable defensible deletion - reducing both legal risk and storage spend.</p>
+                    <p class="why-consequence">Without it, you're paying forever for files you'll never use.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TCO - Quick Punch -->
+    <section class="tco-section">
+        <div class="container">
+            <h2 class="section-title">The Math at 100TB/Month</h2>
+            <p class="section-subtitle">5-year total cost of ownership. Real numbers.</p>
+
+            <div class="tco-comparison">
+                <div class="tco-card competitor">
+                    <h4>AWS S3</h4>
+                    <span class="tco-amount">$3.9M</span>
+                    <p class="tco-note">Egress compounds. Budget unpredictable.</p>
+                </div>
+                <div class="tco-card competitor">
+                    <h4>Backblaze B2</h4>
+                    <span class="tco-amount">$2.2M</span>
+                    <p class="tco-note">"Zero egress" but storage still compounds.</p>
+                </div>
+                <div class="tco-card hauskloud">
+                    <h4>HausKloud</h4>
+                    <span class="tco-amount">$1.1M–$1.8M</span>
+                    <p class="tco-note">Flat line. No curves. No surprises.</p>
+                    <span class="tco-savings">Save $2M+ vs raw cloud</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing - Simplified -->
+    <section class="pricing-section" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Pricing</h2>
+            <p class="section-subtitle">Commit on your terms. The longer you stay, the more you save.</p>
+            <p class="pricing-fit-check">$30k/month replaces cloud storage, egress, backup, and archive ops.<br>If that feels expensive, your archive is probably too small for us to help.</p>
+
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Flex</h3>
+                    <p class="pricing-desc">Month-to-month. Leave anytime.</p>
+                    <div class="pricing-amount">$30k<span>/mo</span></div>
+                    <ul class="pricing-features">
+                        <li>Full lifecycle management</li>
+                        <li>24/7 human support</li>
+                        <li>No commitment required</li>
+                    </ul>
+                    <p class="pricing-projection">~$1.8M over 5 years</p>
+                </div>
+
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Choose This</div>
+                    <h3>Partner</h3>
+                    <p class="pricing-desc">1-3 year commitment. Deeper savings.</p>
+                    <div class="pricing-amount">$15k–$24k<span>/mo</span></div>
+                    <ul class="pricing-features">
+                        <li>Everything in Flex</li>
+                        <li>30 days custom dev/year</li>
+                        <li>30 days workflow consulting/year</li>
+                        <li>Multi-year price lock</li>
+                    </ul>
+                    <p class="pricing-projection">$900k–$1.4M over 5 years</p>
+                </div>
+            </div>
+
+            <p class="pricing-footnote">Prepay options available for additional savings. <a href="mailto:gabe@haus.video?subject=HausKloud%20Pricing%20Details">Ask us about custom structures.</a></p>
+        </div>
+    </section>
+
+    <!-- Scarcity - Make It Real -->
+    <section class="scarcity-section">
+        <div class="container">
+            <div class="scarcity-block">
+                <h3>Why we only take 3 new clients this year</h3>
+                <p>Every client gets a dedicated, <strong>human</strong> point of contact who knows your workflow, your team, and your archive.</p>
+                <p>Taking more than 3 new clients this year breaks that focus. We'd rather say no than deliver less.</p>
+                <p class="scarcity-emphasis">We say no more often than yes.</p>
+                <p class="scarcity-status"><span class="pulse-dot"></span> <strong>2 of 3 slots</strong> currently open for 2026. Pricing structure resets Q2 2026.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA - One Action -->
+    <section class="final-cta" id="contact">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Stop the Bleed?</h2>
+                <p>30-minute discovery call. No deck. No pitch. Just your numbers and ours.<br>If we're not a fit, we'll tell you - and point you somewhere better.</p>
+                <p class="cta-duration">30 minutes. Hard stop.</p>
+
+                <a href="mailto:info@haus.video?subject=HausKloud%20Discovery%20Call" class="btn btn-primary btn-large">Book Your Discovery Call</a>
+
+                <div class="cta-contact">
+                    <p>Or reach out directly:</p>
+                    <p><a href="mailto:info@haus.video">info@haus.video</a> · <a href="tel:+1-347-770-3453">+1-347-770-3453</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="footer-logo">HAUS <strong>MEDIA SYSTEMS</strong></span>
+                    <p>Enterprise media storage. Fixed costs. Forever archive.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#problem">The Problem</a>
+                    <a href="#solution">The Fix</a>
+                    <a href="#calculator">Your Numbers</a>
+                    <a href="#pricing">Pricing</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Haus Media Systems. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Discovery Modal -->
+    <div class="modal-overlay" id="demoModal">
+        <div class="modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-header">
+                <h3>Book a <span class="gradient-text">Discovery Call</span></h3>
+                <p>30 minutes. Your numbers and ours. No pitch deck.</p>
+            </div>
+            <form class="modal-form" id="demoForm">
+                <div class="form-group">
+                    <label for="demoName">Name</label>
+                    <input type="text" id="demoName" name="name" required placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label for="demoCompany">Company</label>
+                    <input type="text" id="demoCompany" name="company" required placeholder="Company name">
+                </div>
+                <div class="form-group">
+                    <label for="demoEmail">Email</label>
+                    <input type="email" id="demoEmail" name="email" required placeholder="you@company.com">
+                </div>
+                <div class="form-group">
+                    <label for="demoStorage">Monthly Data Volume</label>
+                    <select id="demoStorage" name="storage">
+                        <option value="20-50TB">20 - 50 TB</option>
+                        <option value="50-100TB" selected>50 - 100 TB</option>
+                        <option value="100-200TB">100 - 200 TB</option>
+                        <option value="200TB+">200+ TB</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="demoConfig">Current Setup</label>
+                    <select id="demoConfig" name="config">
+                        <option value="hyperscale">Hyperscale Cloud (AWS, Azure, GCP)</option>
+                        <option value="zero-egress">Zero-Egress Cloud (Backblaze, Wasabi)</option>
+                        <option value="on-prem">On-Prem / Self-Managed</option>
+                        <option value="hybrid">Hybrid</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Book Call</button>
+            </form>
+            <div class="modal-success" id="modalSuccess">
+                <div class="success-icon">✓</div>
+                <h4>We'll be in touch within 24 hours.</h4>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/animations.js"></script>
+</body>
+</html>

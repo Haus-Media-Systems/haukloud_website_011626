@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storage Calculator | HausKloud</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        /* Calculator-specific overrides */
+        body {
+            padding-top: 80px;
+        }
+
+        .calculator-page {
+            min-height: 100vh;
+            padding: 40px 24px;
+        }
+
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .calculator-header h1 {
+            font-size: 2.5rem;
+            font-weight: 200;
+            margin-bottom: 12px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--primary);
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1000px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .panel h2 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel h2::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, var(--primary), var(--accent-cyan));
+            border-radius: 2px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(77, 166, 255, 0.2);
+        }
+
+        input[type="range"] {
+            padding: 0;
+            height: 6px;
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .range-value {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 300;
+            color: var(--primary);
+            margin: 15px 0;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Storage Type Tabs */
+        .storage-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .storage-tab {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .storage-tab:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .storage-tab.active {
+            background: rgba(77, 166, 255, 0.2);
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+
+        .storage-tab.active.onprem {
+            background: rgba(255, 193, 7, 0.2);
+            border-color: #ffc107;
+        }
+
+        .storage-tab.active.hybrid {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 193, 7, 0.2));
+            border-color: #ff9f43;
+        }
+
+        .slider-with-value {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slider-with-value input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-value-display {
+            min-width: 50px;
+            text-align: right;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .hybrid-split {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .hybrid-split-bar {
+            height: 8px;
+            background: #ffc107;
+            border-radius: 4px;
+            margin: 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hybrid-split-bar .cloud-portion {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: var(--warning);
+            transition: width 0.3s;
+        }
+
+        .hybrid-split-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .hybrid-split-labels .cloud-label {
+            color: var(--warning);
+        }
+
+        .hybrid-split-labels .onprem-label {
+            color: #ffc107;
+        }
+
+        .tier-options {
+            display: none;
+        }
+
+        .tier-options.active {
+            display: block;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .result-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .result-card.highlight {
+            background: linear-gradient(135deg, rgba(77, 166, 255, 0.2), rgba(102, 204, 255, 0.1));
+            border: 1px solid rgba(77, 166, 255, 0.3);
+        }
+
+        .result-card.savings {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.1));
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            grid-column: span 2;
+        }
+
+
+        .result-card.savings,
+        .result-card.crossover {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+            padding: 24px 30px;
+        }
+
+        .result-card.savings .result-label,
+        .result-card.crossover .result-label,
+        .result-card.negative .result-label {
+            color: var(--text-primary);
+            font-size: 1rem;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+
+        .result-card.savings .result-subtext,
+        .result-card.crossover .result-subtext,
+        .result-card.negative .result-subtext {
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-top: 0;
+            text-align: right;
+        }
+
+        .result-card.negative {
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.15), rgba(201, 162, 39, 0.05));
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            grid-column: span 2;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            text-align: left;
+            padding: 24px 30px;
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .result-card.savings .result-value {
+            color: var(--accent-green);
+            font-size: 2.2rem;
+        }
+
+        .result-card.negative .result-value {
+            color: var(--warning);
+        }
+
+        .result-card.crossover {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.1));
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            grid-column: span 2;
+        }
+
+        .result-card.crossover .result-value {
+            color: #ffc107;
+            font-size: 2.2rem;
+        }
+
+        .result-card.crossover.immediate {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.1));
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .result-card.crossover.immediate .result-value {
+            color: var(--accent-green);
+        }
+
+        .result-card.crossover.none {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(255, 71, 87, 0.1));
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .result-card.crossover.none .result-value {
+            color: var(--warning);
+        }
+
+        .result-subtext {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .current-cost {
+            color: var(--warning);
+        }
+
+        .haus-cost {
+            color: var(--primary);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 30px;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .breakdown-table th {
+            text-align: left;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--text-muted);
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+
+        .breakdown-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .breakdown-table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .savings-cell {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .provider-info {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+        }
+
+        .provider-info h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .provider-info.onprem h4 {
+            color: #ffc107;
+        }
+
+        .provider-info ul {
+            list-style: none;
+            color: var(--text-muted);
+        }
+
+        .provider-info li {
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .provider-info li::before {
+            content: '\2022';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+        }
+
+        .provider-info.onprem li::before {
+            color: #ffc107;
+        }
+
+        .crossover-alert {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.1));
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .crossover-alert strong {
+            color: #ffc107;
+        }
+
+        .competitive-message {
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.15), rgba(201, 162, 39, 0.05));
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 20px;
+        }
+
+        .competitive-message h4 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .competitive-message p {
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+        }
+
+        .competitive-message ul {
+            list-style: none;
+            margin: 16px 0;
+            padding-left: 0;
+        }
+
+        .competitive-message li {
+            color: var(--text-secondary);
+            padding: 6px 0 6px 20px;
+            position: relative;
+            font-size: 0.9rem;
+        }
+
+        .competitive-message li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+        }
+
+        .competitive-message .competitive-cta {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(201, 162, 39, 0.2);
+            font-style: italic;
+        }
+
+        .competitive-message a {
+            color: var(--primary);
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-mid);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 480px;
+            width: 90%;
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .modal-header p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .modal-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .modal-form label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .modal-form input,
+        .modal-form select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .modal-form input:focus,
+        .modal-form select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-form .btn {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .modal-form.hidden {
+            display: none;
+        }
+
+        .modal-success {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .modal-success.show {
+            display: block;
+        }
+
+        .modal-success .success-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--bg-dark);
+            margin: 0 auto 20px;
+        }
+
+        .modal-success h4 {
+            font-weight: 400;
+            color: var(--text-primary);
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .print-button {
+            background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+            border: none;
+            color: var(--bg-dark);
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .print-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--glow-blue);
+        }
+
+        .assumptions {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-subtle);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .assumptions h4 {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .assumptions a {
+            color: var(--primary);
+        }
+
+        .cost-breakdown {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .cost-breakdown h4 {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.9rem;
+        }
+
+        .cost-item:last-child {
+            border-bottom: none;
+        }
+
+        .cost-item .label {
+            color: var(--text-secondary);
+        }
+
+        .cost-item .value {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .cost-item.total {
+            margin-top: 10px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-subtle);
+            font-weight: 600;
+        }
+
+        .cost-item.total .label {
+            color: var(--text-primary);
+        }
+
+        .hidden-factors {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.2);
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .hidden-factors h5 {
+            color: #ffc107;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .hidden-factors ul {
+            list-style: none;
+            color: var(--text-muted);
+        }
+
+        .hidden-factors li {
+            margin-bottom: 4px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: #333;
+            }
+            .panel {
+                border: 1px solid #ddd;
+                background: white;
+            }
+            .print-button, .nav {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <img src="images/HausKloud_Logo_v4_100925.jpg" alt="HausKloud" class="logo-img">
+            </a>
+            <div class="nav-links">
+                <a href="index.html#problem">The Problem</a>
+                <a href="index.html#solution">The Fix</a>
+                <a href="index.html#pricing">Pricing</a>
+                <a href="mailto:gabe@haus.video?subject=HausKloud%20Discovery%20Call" class="nav-cta">Book a Call</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="calculator-page">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Home
+            </a>
+
+            <div class="calculator-header">
+                <span class="calc-type-label">Full Cost Model - Assumptions Exposed</span>
+                <h1>Storage Savings Calculator</h1>
+                <p style="color: var(--text-secondary);">See how much you're leaving on the table with your current setup</p>
+            </div>
+
+            <div class="calculator-grid">
+                <div class="panel">
+                    <h2>Your Storage Profile</h2>
+
+                    <div class="input-group">
+                        <label>Monthly Data Generation</label>
+                        <input type="range" id="monthlyTB" min="20" max="100" value="50" step="5">
+                        <div class="range-value"><span id="monthlyTBValue">50</span> TB/month</div>
+                        <div class="range-labels">
+                            <span>20 TB</span>
+                            <span>100 TB</span>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Current Storage Type</label>
+                        <div class="storage-tabs">
+                            <div class="storage-tab active" data-type="cloud">Cloud</div>
+                            <div class="storage-tab onprem" data-type="onprem">On-Prem</div>
+                            <div class="storage-tab hybrid" data-type="hybrid">Hybrid</div>
+                        </div>
+                    </div>
+
+                    <!-- Cloud Options -->
+                    <div class="tier-options active" id="cloudOptions">
+                        <div class="input-group">
+                            <label>Storage Category</label>
+                            <select id="cloudProvider">
+                                <option value="hyperscale">Hyperscale Cloud (AWS, Azure, GCP)</option>
+                                <option value="zeroegress">Zero-Egress Cloud (Backblaze, Wasabi)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group" id="egressRateGroup">
+                            <label>Monthly Retrieval Rate</label>
+                            <div class="slider-with-value">
+                                <input type="range" id="egressRate" min="0" max="50" value="10" step="5">
+                                <span class="slider-value-display"><span id="egressRateValue">10</span>%</span>
+                            </div>
+                            <div class="range-labels">
+                                <span>0% (Archive only)</span>
+                                <span>50% (Heavy access)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- On-Prem Options -->
+                    <div class="tier-options" id="onpremOptions">
+                        <div class="input-group">
+                            <label>Infrastructure Type</label>
+                            <select id="onpremTier">
+                                <option value="closet">In-House Basic (Server Closet)</option>
+                                <option value="professional">In-House Professional (Server Room)</option>
+                                <option value="colocation">Colocation (Data Center)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>IT Staff Allocation</label>
+                            <select id="itStaff">
+                                <option value="shared">Shared Duties (~10% FTE)</option>
+                                <option value="parttime" selected>Part-Time (~25% FTE)</option>
+                                <option value="dedicated">Dedicated Admin (~50% FTE)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Backup Strategy</label>
+                            <select id="backupStrategy">
+                                <option value="basic">Basic (Local RAID only)</option>
+                                <option value="standard" selected>Standard (RAID + External)</option>
+                                <option value="enterprise">Enterprise (3-2-1 + Off-site)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Hybrid Options -->
+                    <div class="tier-options" id="hybridOptions">
+                        <div class="hybrid-split">
+                            <label>Data Split: Cloud vs On-Prem</label>
+                            <div class="slider-with-value">
+                                <input type="range" id="hybridSplit" min="10" max="90" value="30" step="10">
+                                <span class="slider-value-display"><span id="hybridSplitValue">30</span>%</span>
+                            </div>
+                            <div class="hybrid-split-bar">
+                                <div class="cloud-portion" id="cloudPortion" style="width: 30%"></div>
+                            </div>
+                            <div class="hybrid-split-labels">
+                                <span class="cloud-label"><span id="cloudSplitLabel">30%</span> Cloud</span>
+                                <span class="onprem-label"><span id="onpremSplitLabel">70%</span> On-Prem</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Cloud Category</label>
+                            <select id="hybridCloudProvider">
+                                <option value="hyperscale">Hyperscale Cloud (AWS, Azure, GCP)</option>
+                                <option value="zeroegress">Zero-Egress Cloud (Backblaze, Wasabi)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>On-Prem Infrastructure</label>
+                            <select id="hybridOnpremTier">
+                                <option value="closet">In-House Basic (Server Closet)</option>
+                                <option value="professional" selected>In-House Professional (Server Room)</option>
+                                <option value="colocation">Colocation (Data Center)</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Cloud Retrieval Rate</label>
+                            <div class="slider-with-value">
+                                <input type="range" id="hybridEgressRate" min="0" max="50" value="5" step="5">
+                                <span class="slider-value-display"><span id="hybridEgressRateValue">5</span>%</span>
+                            </div>
+                            <div class="range-labels">
+                                <span>0%</span>
+                                <span>50%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Comparison Period</label>
+                        <select id="years">
+                            <option value="3">3 Years</option>
+                            <option value="5" selected>5 Years</option>
+                            <option value="10">10 Years</option>
+                        </select>
+                    </div>
+
+                    <div class="provider-info" id="providerInfo">
+                        <h4>AWS S3 Pricing Includes:</h4>
+                        <ul id="providerInfoList">
+                            <li>Storage: $0.023/GB/month (first 50TB)</li>
+                            <li>Egress: $0.09/GB downloaded</li>
+                            <li>PUT/GET requests: $0.005/1000</li>
+                            <li>Data transfer acceleration fees</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <h2>Cost Comparison</h2>
+
+                    <div class="results-grid">
+                        <div class="result-card" id="currentCostCard">
+                            <div class="result-label" id="currentCostLabel">Cloud Total</div>
+                            <div class="result-value current-cost" id="currentTotal">$0</div>
+                            <div class="result-subtext" id="currentMonthly">$0/mo avg</div>
+                        </div>
+                        <div class="result-card highlight">
+                            <div class="result-label">HausKloud Total</div>
+                            <div class="result-value haus-cost" id="hausTotal">$0</div>
+                            <div class="result-subtext" id="hausMonthly">$30,000/mo flat</div>
+                        </div>
+                        <div class="result-card savings" id="savingsCard">
+                            <div class="result-label" id="savingsLabel">Your Savings</div>
+                            <div class="result-value" id="totalSavings">$0</div>
+                            <div class="result-subtext" id="savingsPercent">0% less than current</div>
+                        </div>
+                        <div class="result-card crossover" id="crossoverCard">
+                            <div class="result-label">Crossover Point</div>
+                            <div class="result-value crossover-value" id="crossoverValue">Month 24</div>
+                            <div class="result-subtext" id="crossoverText">When current costs exceed HausKloud</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="costChart"></canvas>
+                    </div>
+
+                    <!-- Competitive message when current setup is cheaper - event horizon framing -->
+                    <div class="competitive-message" id="competitiveMessage" style="display: none;">
+                        <h4>You haven't crossed the event horizon - yet</h4>
+                        <p>At this scale, your current setup still works. But the curve is exponential - and this math changes fast as you scale.</p>
+                        <p class="competitive-cta">When it flips - <a href="#" id="openModalLink">we'll be here</a>.</p>
+                    </div>
+
+                    <!-- On-Prem Cost Breakdown -->
+                    <div class="cost-breakdown" id="onpremBreakdown" style="display: none;">
+                        <h4>On-Prem Annual Cost Breakdown</h4>
+                        <div class="cost-item">
+                            <span class="label">Hardware (amortized)</span>
+                            <span class="value" id="hardwareCost">$0</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="label">IT Staff Time</span>
+                            <span class="value" id="staffCost">$0</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="label">Power & Cooling</span>
+                            <span class="value" id="powerCost">$0</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="label">Rack Space / Facility</span>
+                            <span class="value" id="facilityCost">$0</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="label">Support & Maintenance</span>
+                            <span class="value" id="supportCost">$0</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="label">Backup Infrastructure</span>
+                            <span class="value" id="backupCost">$0</span>
+                        </div>
+                        <div class="cost-item">
+                            <span class="label">MAM Software</span>
+                            <span class="value" id="mamCost">$0</span>
+                        </div>
+                        <div class="cost-item total">
+                            <span class="label">Annual Total</span>
+                            <span class="value" id="annualTotal">$0</span>
+                        </div>
+
+                        <div class="hidden-factors">
+                            <h5>Often-Overlooked Costs (Not Included)</h5>
+                            <ul>
+                                <li>Data migration labor during refresh cycles</li>
+                                <li>Emergency hardware replacement</li>
+                                <li>Opportunity cost of IT staff time</li>
+                                <li>Compliance audit preparation</li>
+                                <li>Insurance for data loss</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <h2 style="margin-top: 30px;">Year-by-Year Breakdown</h2>
+                    <table class="breakdown-table">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>Cumulative Data</th>
+                                <th id="currentCostHeader">Cloud Cost</th>
+                                <th>HausKloud</th>
+                                <th>Savings</th>
+                            </tr>
+                        </thead>
+                        <tbody id="breakdownBody">
+                        </tbody>
+                    </table>
+
+                    <button class="print-button" onclick="window.print()">Print / Save as PDF</button>
+
+                    <div class="assumptions">
+                        <h4>Assumptions & Sources</h4>
+                        <p>Cloud pricing based on published rates as of 2025 (AWS, Azure, Google Cloud).</p>
+                        <p>On-prem hardware costs: ~$79/TB/year amortized over 3-5 years (<a href="https://www.45drives.com/blog/cloud-storage/total-cost-of-ownership-cloud-vs-on-premise-storage/" target="_blank">45Drives</a>).</p>
+                        <p>IT staff costs: $120K-$150K/year for storage admin (<a href="https://www.glassdoor.com/Salaries/storage-administrator-salary-SRCH_KO0,21.htm" target="_blank">Glassdoor</a>).</p>
+                        <p>Colocation costs: $184/kW/month avg, full rack 3-5kW (<a href="https://brightlio.com/colocation-pricing/" target="_blank">Brightlio 2025</a>).</p>
+                        <p>HausKloud pricing of $30,000/month includes full-service managed tape archival, metadata management, and NeoFinder integration.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Category-based pricing (averaged from verified sources - Jan 2026)
+        // See HausKloud_Pricing_Verification_Report.md for sources
+        const cloudPricing = {
+            hyperscale: {
+                name: 'Hyperscale Cloud (AWS, Azure, GCP)',
+                // Average: AWS $0.023, Azure $0.018, GCP $0.020 = ~$0.020/GB
+                // Egress: AWS $0.09, Azure $0.087, GCP $0.12 = ~$0.10/GB avg
+                storage: 0.020,
+                egress: 0.10,
+                hasEgress: true,
+                info: [
+                    'Storage: ~$0.020/GB/month (category average)',
+                    'Egress: ~$0.10/GB downloaded (category average)',
+                    'Based on AWS S3, Azure Blob, GCP Storage rates',
+                    'Additional API request fees may apply'
+                ]
+            },
+            zeroegress: {
+                name: 'Zero-Egress Cloud (Backblaze, Wasabi)',
+                // Average: Backblaze $6/TB, Wasabi $6.99/TB = ~$6.50/TB = $0.0065/GB
+                storage: 0.0065,
+                egress: 0,
+                hasEgress: false,
+                info: [
+                    'Storage: ~$0.0065/GB/month (~$6.50/TB)',
+                    'Egress: Free (within limits)',
+                    'Based on Backblaze B2, Wasabi rates',
+                    'Great for archive with frequent retrieval'
+                ]
+            }
+        };
+
+        // On-Prem Pricing (annual costs)
+        const onpremPricing = {
+            closet: {
+                name: 'In-House Basic (Server Closet)',
+                hardwarePerTB: 60,
+                powerPerTB: 15,
+                facilityPerTB: 0,
+                supportPercent: 0.05,
+                refreshYears: 4,
+                mamAnnual: 12000, // Basic MAM ~$1k/mo (iconik, Kyno, etc.)
+                info: [
+                    'Consumer/prosumer NAS or server hardware',
+                    'Basic RAID configuration',
+                    'No dedicated facility costs',
+                    'Basic MAM software (~$1k/mo)',
+                    'IT handles storage as side duty'
+                ]
+            },
+            professional: {
+                name: 'In-House Professional (Server Room)',
+                hardwarePerTB: 79,
+                powerPerTB: 25,
+                facilityPerTB: 10,
+                supportPercent: 0.12,
+                refreshYears: 3.5,
+                mamAnnual: 48000, // Mid-tier MAM ~$4k/mo (CatDV, Reach Engine)
+                info: [
+                    'Enterprise-grade storage arrays',
+                    'Dedicated server room with cooling',
+                    'RAID 6 or similar redundancy',
+                    'Enterprise MAM software (~$4k/mo)',
+                    '3-4 year hardware refresh cycle'
+                ]
+            },
+            colocation: {
+                name: 'Colocation (Data Center)',
+                hardwarePerTB: 79,
+                powerPerTB: 35,
+                facilityPerTB: 50,
+                supportPercent: 0.15,
+                refreshYears: 3,
+                mamAnnual: 72000, // Enterprise MAM ~$6k/mo (Reach Engine, Dalet, etc.)
+                info: [
+                    'Enterprise hardware in Tier 3+ data center',
+                    'Colocation: ~$184/kW/month (2025 avg)',
+                    'Full redundancy (power, network, cooling)',
+                    'Enterprise MAM software (~$6k/mo)',
+                    '24/7 physical security'
+                ]
+            }
+        };
+
+        const itStaffCosts = {
+            shared: { fte: 0.10, label: '~10% FTE' },
+            parttime: { fte: 0.25, label: '~25% FTE' },
+            dedicated: { fte: 0.50, label: '~50% FTE' }
+        };
+        const STORAGE_ADMIN_SALARY = 120000;
+
+        const backupStrategies = {
+            basic: { overhead: 1.0, costPerTB: 0, label: 'RAID only' },
+            standard: { overhead: 1.5, costPerTB: 20, label: 'RAID + External backup' },
+            enterprise: { overhead: 2.0, costPerTB: 60, label: '3-2-1 + Off-site' }
+        };
+
+        const HAUSKLOUD_MONTHLY = 30000;
+
+        let chart = null;
+        let currentStorageType = 'cloud';
+
+        function formatCurrency(num) {
+            if (num >= 1000000) {
+                return '$' + (num / 1000000).toFixed(2) + 'M';
+            } else if (num >= 1000) {
+                return '$' + (num / 1000).toFixed(0) + 'K';
+            }
+            return '$' + num.toFixed(0);
+        }
+
+        function formatTB(gb) {
+            const tb = gb / 1000;
+            if (tb >= 1000) {
+                return (tb / 1000).toFixed(1) + ' PB';
+            }
+            return tb.toFixed(0) + ' TB';
+        }
+
+        function calculateCloud(monthlyTBOverride = null, categoryOverride = null, egressRateOverride = null, yearsOverride = null) {
+            const monthlyTB = monthlyTBOverride ?? parseInt(document.getElementById('monthlyTB').value);
+            const category = categoryOverride ?? document.getElementById('cloudProvider').value;
+            const egressRate = (egressRateOverride ?? parseInt(document.getElementById('egressRate').value)) / 100;
+            const years = yearsOverride ?? parseInt(document.getElementById('years').value);
+
+            const monthlyGB = monthlyTB * 1000;
+            const months = years * 12;
+            const pricing = cloudPricing[category];
+
+            let costs = [];
+            let cumulativeGB = 0;
+            let runningTotal = 0;
+            let crossoverMonth = null;
+
+            for (let m = 1; m <= months; m++) {
+                cumulativeGB += monthlyGB;
+                let monthlyCloudCost = cumulativeGB * pricing.storage;
+
+                // Add egress if applicable (hyperscale only)
+                if (pricing.hasEgress) {
+                    const egressGB = cumulativeGB * egressRate;
+                    monthlyCloudCost += egressGB * pricing.egress;
+                }
+
+                runningTotal += monthlyCloudCost;
+                costs.push(runningTotal);
+
+                const hausKloudCumulative = m * HAUSKLOUD_MONTHLY;
+                if (crossoverMonth === null && runningTotal > hausKloudCumulative) {
+                    crossoverMonth = m;
+                }
+            }
+
+            return { costs, crossoverMonth, finalCumulativeGB: cumulativeGB };
+        }
+
+        function calculateOnPrem(monthlyTBOverride = null, tierOverride = null, staffLevelOverride = null, backupLevelOverride = null, yearsOverride = null) {
+            const monthlyTB = monthlyTBOverride ?? parseInt(document.getElementById('monthlyTB').value);
+            const tier = tierOverride ?? document.getElementById('onpremTier').value;
+            const staffLevel = staffLevelOverride ?? document.getElementById('itStaff').value;
+            const backupLevel = backupLevelOverride ?? document.getElementById('backupStrategy').value;
+            const years = yearsOverride ?? parseInt(document.getElementById('years').value);
+
+            const months = years * 12;
+            const pricing = onpremPricing[tier];
+            const staff = itStaffCosts[staffLevel];
+            const backup = backupStrategies[backupLevel];
+
+            let costs = [];
+            let runningTotal = 0;
+            let crossoverMonth = null;
+            let annualBreakdown = { hardware: 0, staff: 0, power: 0, facility: 0, support: 0, backup: 0, mam: 0 };
+
+            for (let m = 1; m <= months; m++) {
+                const cumulativeTB = monthlyTB * m;
+                const effectiveTB = cumulativeTB * backup.overhead;
+
+                const hardwareCost = (effectiveTB * pricing.hardwarePerTB) / 12;
+                const staffCost = (STORAGE_ADMIN_SALARY * staff.fte) / 12;
+                const powerCost = (effectiveTB * pricing.powerPerTB) / 12;
+                const facilityCost = (effectiveTB * pricing.facilityPerTB) / 12;
+                const supportCost = (effectiveTB * pricing.hardwarePerTB * pricing.supportPercent) / 12;
+                const backupCost = (cumulativeTB * backup.costPerTB) / 12;
+                const mamCost = pricing.mamAnnual / 12;
+
+                const monthlyTotal = hardwareCost + staffCost + powerCost + facilityCost + supportCost + backupCost + mamCost;
+                runningTotal += monthlyTotal;
+                costs.push(runningTotal);
+
+                const hausKloudCumulative = m * HAUSKLOUD_MONTHLY;
+                if (crossoverMonth === null && runningTotal > hausKloudCumulative) {
+                    crossoverMonth = m;
+                }
+
+                if (m === months) {
+                    const finalTB = cumulativeTB;
+                    const finalEffectiveTB = effectiveTB;
+                    annualBreakdown = {
+                        hardware: finalEffectiveTB * pricing.hardwarePerTB,
+                        staff: STORAGE_ADMIN_SALARY * staff.fte,
+                        power: finalEffectiveTB * pricing.powerPerTB,
+                        facility: finalEffectiveTB * pricing.facilityPerTB,
+                        support: finalEffectiveTB * pricing.hardwarePerTB * pricing.supportPercent,
+                        backup: finalTB * backup.costPerTB,
+                        mam: pricing.mamAnnual
+                    };
+                }
+            }
+
+            return { costs, crossoverMonth, finalCumulativeGB: monthlyTB * months * 1000, annualBreakdown };
+        }
+
+        function calculateHybrid() {
+            const monthlyTB = parseInt(document.getElementById('monthlyTB').value);
+            const cloudSplit = parseInt(document.getElementById('hybridSplit').value) / 100;
+            const onpremSplit = 1 - cloudSplit;
+            const cloudCategory = document.getElementById('hybridCloudProvider').value;
+            const onpremTier = document.getElementById('hybridOnpremTier').value;
+            const egressRatePercent = parseInt(document.getElementById('hybridEgressRate').value) / 100;
+            const years = parseInt(document.getElementById('years').value);
+
+            const months = years * 12;
+            const cloudMonthlyTB = monthlyTB * cloudSplit;
+            const onpremMonthlyTB = monthlyTB * onpremSplit;
+
+            const cloudRates = cloudPricing[cloudCategory];
+            const onpremConfig = onpremPricing[onpremTier];
+            const staffConfig = itStaffCosts['parttime'];
+            const backupConfig = backupStrategies['standard'];
+
+            let costs = [];
+            let runningTotal = 0;
+            let crossoverMonth = null;
+            let annualBreakdown = {};
+
+            for (let m = 1; m <= months; m++) {
+                const cloudCumulativeGB = cloudMonthlyTB * m * 1000;
+                let monthlyCloudCost = cloudCumulativeGB * cloudRates.storage;
+
+                // Add egress if applicable (hyperscale only)
+                if (cloudRates.hasEgress) {
+                    const egressGB = cloudCumulativeGB * egressRatePercent;
+                    monthlyCloudCost += egressGB * cloudRates.egress;
+                }
+
+                const onpremCumulativeTB = onpremMonthlyTB * m;
+                const effectiveTB = onpremCumulativeTB * backupConfig.overhead;
+
+                const hardwareCost = (effectiveTB * onpremConfig.hardwarePerTB) / 12;
+                const staffCost = (STORAGE_ADMIN_SALARY * staffConfig.fte) / 12;
+                const powerCost = (effectiveTB * onpremConfig.powerPerTB) / 12;
+                const facilityCost = (effectiveTB * onpremConfig.facilityPerTB) / 12;
+                const supportCost = (effectiveTB * onpremConfig.hardwarePerTB * onpremConfig.supportPercent) / 12;
+                const backupCost = (onpremCumulativeTB * backupConfig.costPerTB) / 12;
+                const mamCost = onpremConfig.mamAnnual / 12;
+
+                const monthlyOnpremCost = hardwareCost + staffCost + powerCost + facilityCost + supportCost + backupCost + mamCost;
+                const monthlyCombined = monthlyCloudCost + monthlyOnpremCost;
+                runningTotal += monthlyCombined;
+                costs.push(runningTotal);
+
+                const hausKloudCumulative = m * HAUSKLOUD_MONTHLY;
+                if (crossoverMonth === null && runningTotal > hausKloudCumulative) {
+                    crossoverMonth = m;
+                }
+
+                if (m === months) {
+                    annualBreakdown = {
+                        hardware: effectiveTB * onpremConfig.hardwarePerTB,
+                        staff: STORAGE_ADMIN_SALARY * staffConfig.fte,
+                        power: effectiveTB * onpremConfig.powerPerTB,
+                        facility: effectiveTB * onpremConfig.facilityPerTB,
+                        support: effectiveTB * onpremConfig.hardwarePerTB * onpremConfig.supportPercent,
+                        backup: onpremCumulativeTB * backupConfig.costPerTB,
+                        mam: onpremConfig.mamAnnual,
+                        cloudStorage: monthlyCloudCost * 12,
+                    };
+                }
+            }
+
+            return { costs, crossoverMonth, finalCumulativeGB: monthlyTB * months * 1000, annualBreakdown, cloudSplit, onpremSplit };
+        }
+
+        function calculate() {
+            const monthlyTB = parseInt(document.getElementById('monthlyTB').value);
+            const years = parseInt(document.getElementById('years').value);
+            const months = years * 12;
+
+            document.getElementById('monthlyTBValue').textContent = monthlyTB;
+            document.getElementById('egressRateValue').textContent = document.getElementById('egressRate').value;
+            if (document.getElementById('hybridEgressRateValue')) {
+                document.getElementById('hybridEgressRateValue').textContent = document.getElementById('hybridEgressRate').value;
+            }
+            if (document.getElementById('hybridSplitValue')) {
+                const splitVal = document.getElementById('hybridSplit').value;
+                document.getElementById('hybridSplitValue').textContent = splitVal;
+                document.getElementById('cloudSplitLabel').textContent = splitVal + '%';
+                document.getElementById('onpremSplitLabel').textContent = (100 - splitVal) + '%';
+                document.getElementById('cloudPortion').style.width = splitVal + '%';
+            }
+
+            let result;
+            if (currentStorageType === 'cloud') {
+                result = calculateCloud();
+                updateCloudInfo();
+                document.getElementById('onpremBreakdown').style.display = 'none';
+                document.getElementById('currentCostLabel').textContent = 'Cloud Total';
+                document.getElementById('currentCostHeader').textContent = 'Cloud Cost';
+            } else if (currentStorageType === 'onprem') {
+                result = calculateOnPrem();
+                updateOnPremInfo();
+                updateOnPremBreakdown(result.annualBreakdown);
+                document.getElementById('onpremBreakdown').style.display = 'block';
+                document.getElementById('currentCostLabel').textContent = 'On-Prem Total';
+                document.getElementById('currentCostHeader').textContent = 'On-Prem Cost';
+            } else {
+                result = calculateHybrid();
+                updateHybridInfo();
+                updateHybridBreakdown(result.annualBreakdown);
+                document.getElementById('onpremBreakdown').style.display = 'block';
+                document.getElementById('currentCostLabel').textContent = 'Hybrid Total';
+                document.getElementById('currentCostHeader').textContent = 'Hybrid Cost';
+            }
+
+            const { costs: currentCosts, crossoverMonth } = result;
+
+            let hausCosts = [];
+            let hausRunningTotal = 0;
+            for (let m = 1; m <= months; m++) {
+                hausRunningTotal += HAUSKLOUD_MONTHLY;
+                hausCosts.push(hausRunningTotal);
+            }
+
+            const currentTotal = currentCosts[currentCosts.length - 1];
+            const hausTotal = hausCosts[hausCosts.length - 1];
+            const savings = currentTotal - hausTotal;
+            const savingsPercent = currentTotal > 0 ? ((savings / currentTotal) * 100).toFixed(0) : 0;
+
+            document.getElementById('currentTotal').textContent = formatCurrency(currentTotal);
+            document.getElementById('currentMonthly').textContent = formatCurrency(currentTotal / months) + '/mo avg';
+            document.getElementById('hausTotal').textContent = formatCurrency(hausTotal);
+            document.getElementById('totalSavings').textContent = formatCurrency(Math.abs(savings));
+
+            const savingsCard = document.getElementById('savingsCard');
+            const savingsLabel = document.getElementById('savingsLabel');
+            const competitiveMessage = document.getElementById('competitiveMessage');
+
+            if (savings > 0) {
+                savingsLabel.textContent = 'Your Savings';
+                document.getElementById('savingsPercent').textContent = savingsPercent + '% less than current';
+                document.getElementById('totalSavings').style.color = 'var(--accent-green)';
+                savingsCard.classList.remove('negative');
+                savingsCard.classList.add('savings');
+                competitiveMessage.style.display = 'none';
+            } else {
+                savingsLabel.textContent = 'Price Difference';
+                document.getElementById('savingsPercent').textContent = 'Your setup is ' + Math.abs(savingsPercent) + '% cheaper';
+                document.getElementById('totalSavings').style.color = 'var(--text-primary)';
+                savingsCard.classList.remove('savings');
+                savingsCard.classList.add('negative');
+                competitiveMessage.style.display = 'block';
+            }
+
+            const crossoverCard = document.getElementById('crossoverCard');
+            const crossoverValue = document.getElementById('crossoverValue');
+            const crossoverText = document.getElementById('crossoverText');
+            const typeLabel = currentStorageType === 'cloud' ? 'Cloud' : currentStorageType === 'onprem' ? 'On-prem' : 'Hybrid';
+
+            crossoverCard.classList.remove('immediate', 'none');
+            if (crossoverMonth) {
+                crossoverValue.textContent = `Month ${crossoverMonth}`;
+                crossoverText.textContent = `${typeLabel} exceeds HausKloud (${(crossoverMonth / 12).toFixed(1)} years)`;
+            } else if (savings > 0) {
+                crossoverCard.classList.add('immediate');
+                crossoverValue.textContent = 'Month 1';
+                crossoverText.textContent = `${typeLabel} is already more expensive`;
+            } else {
+                crossoverCard.classList.add('none');
+                crossoverValue.textContent = 'Never';
+                crossoverText.textContent = `HausKloud doesn't beat current setup`;
+            }
+
+            const tbody = document.getElementById('breakdownBody');
+            tbody.innerHTML = '';
+
+            for (let y = 1; y <= years; y++) {
+                const monthIndex = (y * 12) - 1;
+                const yearCurrentCost = currentCosts[monthIndex];
+                const yearHausCost = hausCosts[monthIndex];
+                const yearSavings = yearCurrentCost - yearHausCost;
+                const cumulativeData = monthlyTB * y * 12 * 1000;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>Year ${y}</td>
+                    <td>${formatTB(cumulativeData)}</td>
+                    <td class="current-cost">${formatCurrency(yearCurrentCost)}</td>
+                    <td class="haus-cost">${formatCurrency(yearHausCost)}</td>
+                    <td class="${yearSavings > 0 ? 'savings-cell' : ''}">${yearSavings > 0 ? formatCurrency(yearSavings) : '-'}</td>
+                `;
+                tbody.appendChild(row);
+            }
+
+            updateChart(currentCosts, hausCosts, years, crossoverMonth);
+        }
+
+        function updateCloudInfo() {
+            const category = document.getElementById('cloudProvider').value;
+            const providerInfo = document.getElementById('providerInfo');
+            const egressGroup = document.getElementById('egressRateGroup');
+            providerInfo.classList.remove('onprem');
+            providerInfo.querySelector('h4').textContent = cloudPricing[category].name + ' Pricing:';
+            const ul = providerInfo.querySelector('ul');
+            ul.innerHTML = cloudPricing[category].info.map(item => `<li>${item}</li>`).join('');
+
+            // Show/hide egress rate slider based on category
+            if (cloudPricing[category].hasEgress) {
+                egressGroup.style.display = 'block';
+            } else {
+                egressGroup.style.display = 'none';
+            }
+        }
+
+        function updateOnPremInfo() {
+            const tier = document.getElementById('onpremTier').value;
+            const providerInfo = document.getElementById('providerInfo');
+            providerInfo.classList.add('onprem');
+            providerInfo.querySelector('h4').textContent = onpremPricing[tier].name + ' Includes:';
+            const ul = providerInfo.querySelector('ul');
+            ul.innerHTML = onpremPricing[tier].info.map(item => `<li>${item}</li>`).join('');
+        }
+
+        function updateOnPremBreakdown(breakdown) {
+            document.getElementById('hardwareCost').textContent = formatCurrency(breakdown.hardware);
+            document.getElementById('staffCost').textContent = formatCurrency(breakdown.staff);
+            document.getElementById('powerCost').textContent = formatCurrency(breakdown.power);
+            document.getElementById('facilityCost').textContent = formatCurrency(breakdown.facility);
+            document.getElementById('supportCost').textContent = formatCurrency(breakdown.support);
+            document.getElementById('backupCost').textContent = formatCurrency(breakdown.backup);
+            document.getElementById('mamCost').textContent = formatCurrency(breakdown.mam);
+            const total = breakdown.hardware + breakdown.staff + breakdown.power + breakdown.facility + breakdown.support + breakdown.backup + breakdown.mam;
+            document.getElementById('annualTotal').textContent = formatCurrency(total);
+        }
+
+        function updateHybridInfo() {
+            const cloudProvider = document.getElementById('hybridCloudProvider').value;
+            const onpremTier = document.getElementById('hybridOnpremTier').value;
+            const cloudSplit = document.getElementById('hybridSplit').value;
+            const providerInfo = document.getElementById('providerInfo');
+            providerInfo.classList.add('onprem');
+            providerInfo.querySelector('h4').textContent = 'Hybrid Configuration:';
+            const ul = providerInfo.querySelector('ul');
+            ul.innerHTML = [
+                `${cloudSplit}% in ${cloudPricing[cloudProvider].name}`,
+                `${100 - cloudSplit}% in ${onpremPricing[onpremTier].name}`,
+                'Managing two systems simultaneously',
+                'Paying for both cloud fees and on-prem infrastructure',
+                'Added complexity for IT staff'
+            ].map(item => `<li>${item}</li>`).join('');
+        }
+
+        function updateHybridBreakdown(breakdown) {
+            document.getElementById('hardwareCost').textContent = formatCurrency(breakdown.hardware);
+            document.getElementById('staffCost').textContent = formatCurrency(breakdown.staff);
+            document.getElementById('powerCost').textContent = formatCurrency(breakdown.power);
+            document.getElementById('facilityCost').textContent = formatCurrency(breakdown.facility);
+            document.getElementById('supportCost').textContent = formatCurrency(breakdown.support);
+            document.getElementById('backupCost').textContent = formatCurrency(breakdown.backup);
+            document.getElementById('mamCost').textContent = formatCurrency(breakdown.mam + breakdown.cloudStorage);
+            const total = breakdown.hardware + breakdown.staff + breakdown.power + breakdown.facility + breakdown.support + breakdown.backup + breakdown.mam + breakdown.cloudStorage;
+            document.getElementById('annualTotal').textContent = formatCurrency(total);
+            document.querySelector('#onpremBreakdown h4').textContent = 'Hybrid Annual Cost Breakdown';
+            document.querySelector('#onpremBreakdown .cost-item:nth-child(7) .label').textContent = 'MAM + Cloud Storage';
+        }
+
+        function updateChart(currentCosts, hausCosts, years, crossoverMonth) {
+            const ctx = document.getElementById('costChart').getContext('2d');
+
+            const labels = [];
+            const currentData = [];
+            const hausData = [];
+
+            for (let m = 6; m <= years * 12; m += 6) {
+                labels.push(`Month ${m}`);
+                currentData.push(currentCosts[m - 1]);
+                hausData.push(hausCosts[m - 1]);
+            }
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            const currentLabel = currentStorageType === 'cloud' ? 'Cloud Storage' : currentStorageType === 'onprem' ? 'On-Premises' : 'Hybrid';
+            const currentColor = currentStorageType === 'cloud' ? '#ff6b6b' : currentStorageType === 'onprem' ? '#ffc107' : '#ff9f43';
+
+            // Find which label index the crossover falls into
+            let crossoverIndex = null;
+            if (crossoverMonth) {
+                crossoverIndex = Math.floor(crossoverMonth / 6) - 1;
+                if (crossoverIndex < 0) crossoverIndex = 0;
+                if (crossoverIndex >= labels.length) crossoverIndex = labels.length - 1;
+            }
+
+            // Crossover line plugin
+            const crossoverLinePlugin = {
+                id: 'crossoverLine',
+                afterDraw: (chart) => {
+                    if (crossoverMonth && crossoverIndex !== null) {
+                        const ctx = chart.ctx;
+                        const xAxis = chart.scales.x;
+                        const yAxis = chart.scales.y;
+
+                        // Calculate x position (interpolate within the 6-month interval)
+                        const monthInInterval = crossoverMonth % 6 || 6;
+                        const baseX = xAxis.getPixelForValue(crossoverIndex);
+                        const nextX = crossoverIndex < labels.length - 1 ? xAxis.getPixelForValue(crossoverIndex + 1) : baseX;
+                        const x = baseX + (nextX - baseX) * (monthInInterval / 6);
+
+                        // Draw vertical line
+                        ctx.save();
+                        ctx.beginPath();
+                        ctx.setLineDash([5, 5]);
+                        ctx.strokeStyle = '#ffc107';
+                        ctx.lineWidth = 2;
+                        ctx.moveTo(x, yAxis.top);
+                        ctx.lineTo(x, yAxis.bottom);
+                        ctx.stroke();
+
+                        // Draw label
+                        ctx.fillStyle = '#ffc107';
+                        ctx.font = 'bold 12px Inter, sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('Crossover', x, yAxis.top - 8);
+                        ctx.restore();
+                    }
+                }
+            };
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                plugins: [crossoverLinePlugin],
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: currentLabel,
+                            data: currentData,
+                            borderColor: currentColor,
+                            backgroundColor: currentColor + '1A',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'HausKloud',
+                            data: hausData,
+                            borderColor: '#4da6ff',
+                            backgroundColor: 'rgba(77, 166, 255, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: '#888' }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.raw);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#666' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: {
+                                color: '#666',
+                                callback: function(value) { return formatCurrency(value); }
+                            }
+                        }
+                    },
+                    interaction: { intersect: false, mode: 'index' }
+                }
+            });
+        }
+
+        // Tab switching
+        document.querySelectorAll('.storage-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.storage-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentStorageType = this.dataset.type;
+
+                document.getElementById('cloudOptions').classList.remove('active');
+                document.getElementById('onpremOptions').classList.remove('active');
+                document.getElementById('hybridOptions').classList.remove('active');
+
+                if (currentStorageType === 'cloud') {
+                    document.getElementById('cloudOptions').classList.add('active');
+                } else if (currentStorageType === 'onprem') {
+                    document.getElementById('onpremOptions').classList.add('active');
+                } else {
+                    document.getElementById('hybridOptions').classList.add('active');
+                }
+
+                if (currentStorageType !== 'hybrid') {
+                    document.querySelector('#onpremBreakdown h4').textContent = 'On-Prem Annual Cost Breakdown';
+                    const mamLabel = document.querySelector('#onpremBreakdown .cost-item:nth-child(7) .label');
+                    if (mamLabel) mamLabel.textContent = 'MAM Software';
+                }
+
+                calculate();
+            });
+        });
+
+        // Event listeners
+        document.getElementById('monthlyTB').addEventListener('input', calculate);
+        document.getElementById('cloudProvider').addEventListener('change', () => {
+            updateCloudInfo();
+            calculate();
+        });
+        document.getElementById('egressRate').addEventListener('input', calculate);
+        document.getElementById('onpremTier').addEventListener('change', calculate);
+        document.getElementById('itStaff').addEventListener('change', calculate);
+        document.getElementById('backupStrategy').addEventListener('change', calculate);
+        document.getElementById('years').addEventListener('change', calculate);
+        document.getElementById('hybridSplit').addEventListener('input', calculate);
+        document.getElementById('hybridCloudProvider').addEventListener('change', calculate);
+        document.getElementById('hybridOnpremTier').addEventListener('change', calculate);
+        document.getElementById('hybridEgressRate').addEventListener('input', calculate);
+
+        // Initial calculation
+        calculate();
+    </script>
+
+    <!-- Discovery Modal -->
+    <div class="modal-overlay" id="demoModal">
+        <div class="modal">
+            <button class="modal-close" id="modalClose">&times;</button>
+            <div class="modal-header">
+                <h3>Still Curious? <span class="gradient-text">Let's Talk</span></h3>
+                <p>Your setup looks solid on paper. Let's see if there's value beyond the numbers.</p>
+            </div>
+            <form class="modal-form" id="demoForm">
+                <div class="form-group">
+                    <label for="demoName">Name</label>
+                    <input type="text" id="demoName" name="name" required placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label for="demoCompany">Company</label>
+                    <input type="text" id="demoCompany" name="company" required placeholder="Company name">
+                </div>
+                <div class="form-group">
+                    <label for="demoEmail">Email</label>
+                    <input type="email" id="demoEmail" name="email" required placeholder="you@company.com">
+                </div>
+                <div class="form-group">
+                    <label for="demoStorage">Monthly Data Volume</label>
+                    <select id="demoStorage" name="storage">
+                        <option value="20-50TB">20 - 50 TB</option>
+                        <option value="50-100TB" selected>50 - 100 TB</option>
+                        <option value="100TB+">100+ TB</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="demoInterest">What interests you most?</label>
+                    <select id="demoInterest" name="interest">
+                        <option value="managed-service">Managed service (hands-off)</option>
+                        <option value="searchability">Searchable archive / metadata</option>
+                        <option value="durability">30-year LTO durability</option>
+                        <option value="predictability">Predictable costs</option>
+                        <option value="all">All of the above</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Let's Talk</button>
+            </form>
+            <div class="modal-success" id="modalSuccess">
+                <div class="success-icon">✓</div>
+                <h4>We'll be in touch within 24 hours.</h4>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal functionality
+        (function() {
+            const modal = document.getElementById('demoModal');
+            const modalClose = document.getElementById('modalClose');
+            const demoForm = document.getElementById('demoForm');
+            const modalSuccess = document.getElementById('modalSuccess');
+            const openModalLink = document.getElementById('openModalLink');
+
+            if (!modal || !openModalLink) return;
+
+            // Open modal when clicking the link
+            openModalLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+
+            // Close modal function
+            function closeModal() {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            // Close button
+            modalClose.addEventListener('click', closeModal);
+
+            // Close on overlay click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+
+            // Form submission
+            demoForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const submitBtn = demoForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Sending...';
+                submitBtn.disabled = true;
+
+                const formData = new FormData(demoForm);
+
+                try {
+                    const response = await fetch('https://formspree.io/f/xkoogayb', {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (response.ok) {
+                        demoForm.classList.add('hidden');
+                        modalSuccess.classList.add('show');
+
+                        setTimeout(() => demoForm.reset(), 500);
+
+                        setTimeout(() => {
+                            closeModal();
+                            setTimeout(() => {
+                                demoForm.classList.remove('hidden');
+                                modalSuccess.classList.remove('show');
+                            }, 300);
+                        }, 3000);
+                    } else {
+                        throw new Error('Submission failed');
+                    }
+                } catch (error) {
+                    alert('Something went wrong. Please email gabe@haus.video directly.');
+                } finally {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

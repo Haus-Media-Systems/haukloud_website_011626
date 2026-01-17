@@ -1,0 +1,536 @@
+/* ====================================
+   HausKloud Website - Animations
+   ==================================== */
+
+/* ====================================
+   Hero Particle System
+   ==================================== */
+.hero-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: var(--primary);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    animation: heroParticleFloat 15s linear infinite;
+}
+
+@keyframes heroParticleFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0);
+    }
+    10% {
+        opacity: 0.6;
+        transform: translateY(80vh) scale(1);
+    }
+    90% {
+        opacity: 0.6;
+        transform: translateY(-10vh) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20vh) scale(0);
+    }
+}
+
+/* Particle size variations */
+.hero-particle.small {
+    width: 2px;
+    height: 2px;
+}
+
+.hero-particle.large {
+    width: 6px;
+    height: 6px;
+    box-shadow: 0 0 10px var(--primary);
+}
+
+/* Particle color variations */
+.hero-particle.cyan {
+    background: var(--accent-cyan);
+    box-shadow: 0 0 8px var(--accent-cyan);
+}
+
+.hero-particle.green {
+    background: var(--accent-green);
+    box-shadow: 0 0 8px var(--accent-green);
+}
+
+/* ====================================
+   Pipeline Flow Animations
+   ==================================== */
+.pipeline-glow-animated {
+    animation: pipelineGlowPulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes pipelineGlowPulse {
+    0% {
+        stroke: var(--primary);
+        filter: drop-shadow(0 0 6px var(--primary)) drop-shadow(0 0 12px rgba(77, 166, 255, 0.4));
+    }
+    100% {
+        stroke: var(--primary-light);
+        filter: drop-shadow(0 0 10px var(--primary-light)) drop-shadow(0 0 20px rgba(102, 179, 255, 0.6));
+    }
+}
+
+/* Data Flow Particle */
+.data-particle {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle,
+        var(--primary) 0%,
+        rgba(77, 166, 255, 0.8) 30%,
+        rgba(77, 166, 255, 0.4) 60%,
+        transparent 100%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 100;
+    box-shadow:
+        0 0 10px rgba(77, 166, 255, 0.8),
+        0 0 20px rgba(77, 166, 255, 0.4),
+        0 0 30px rgba(77, 166, 255, 0.2);
+}
+
+.data-particle::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 5px var(--primary);
+}
+
+/* Particle trail effect */
+.data-particle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -20px;
+    width: 20px;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--primary));
+    transform: translateY(-50%);
+}
+
+/* ====================================
+   Storage Cube Animations
+   ==================================== */
+.cube-breathe {
+    animation: cubeBreathe 4s ease-in-out infinite;
+}
+
+@keyframes cubeBreathe {
+    0%, 100% {
+        transform: perspective(200px) rotateX(-15deg) rotateY(-15deg) scale(1);
+    }
+    50% {
+        transform: perspective(200px) rotateX(-12deg) rotateY(-18deg) scale(1.02);
+    }
+}
+
+.cube-rotate {
+    animation: cubeRotate 8s linear infinite;
+}
+
+@keyframes cubeRotate {
+    0% {
+        transform: perspective(200px) rotateX(-15deg) rotateY(-15deg);
+    }
+    25% {
+        transform: perspective(200px) rotateX(-10deg) rotateY(-45deg);
+    }
+    50% {
+        transform: perspective(200px) rotateX(-15deg) rotateY(-75deg);
+    }
+    75% {
+        transform: perspective(200px) rotateX(-20deg) rotateY(-45deg);
+    }
+    100% {
+        transform: perspective(200px) rotateX(-15deg) rotateY(-15deg);
+    }
+}
+
+/* Cube glow on hover */
+.storage-cube:hover .cube-face {
+    box-shadow: inset 0 0 20px rgba(77, 166, 255, 0.3);
+}
+
+/* ====================================
+   Tape Reel Animation
+   ==================================== */
+.tape-spinning {
+    animation: tapeReelSpin 2s linear infinite;
+}
+
+@keyframes tapeReelSpin {
+    from { transform: translateY(-50%) rotate(0deg); }
+    to { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* Tape archive pulse */
+.tape-archive-pulse {
+    animation: tapeArchivePulse 3s ease-in-out infinite;
+}
+
+@keyframes tapeArchivePulse {
+    0%, 100% {
+        box-shadow: 0 4px 20px rgba(102, 204, 255, 0.2);
+    }
+    50% {
+        box-shadow: 0 4px 30px rgba(102, 204, 255, 0.4);
+    }
+}
+
+/* ====================================
+   SD Card Animation
+   ==================================== */
+.sd-card-float {
+    animation: sdCardFloat 4s ease-in-out infinite;
+}
+
+@keyframes sdCardFloat {
+    0%, 100% {
+        transform: translateY(0) rotateY(0deg);
+    }
+    50% {
+        transform: translateY(-5px) rotateY(5deg);
+    }
+}
+
+.sd-activity-blink {
+    animation: sdActivityBlink 2.5s ease-in-out infinite;
+}
+
+@keyframes sdActivityBlink {
+    0%, 100% {
+        opacity: 0.4;
+        filter: drop-shadow(0 0 2px var(--accent-green));
+    }
+    50% {
+        opacity: 1;
+        filter: drop-shadow(0 0 8px var(--accent-green));
+    }
+}
+
+/* ====================================
+   Card & Section Animations
+   ==================================== */
+.fade-in-up {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
+/* Scale in animation */
+.scale-in {
+    opacity: 0;
+    transform: scale(0.9);
+    animation: scaleIn 0.5s ease-out forwards;
+}
+
+@keyframes scaleIn {
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* ====================================
+   Number Counter Animation
+   ==================================== */
+.count-up {
+    display: inline-block;
+}
+
+/* Pulse effect for savings numbers */
+.savings-pulse {
+    animation: savingsPulse 2s ease-in-out infinite;
+}
+
+@keyframes savingsPulse {
+    0%, 100% {
+        transform: scale(1);
+        text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+    }
+    50% {
+        transform: scale(1.02);
+        text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+    }
+}
+
+/* ====================================
+   Button Hover Effects
+   ==================================== */
+.btn-glow {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-glow::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-glow:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Ripple effect */
+.btn-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(0);
+    animation: rippleEffect 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes rippleEffect {
+    to {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
+
+/* ====================================
+   Scroll-triggered Animations
+   ==================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.reveal-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.reveal-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ====================================
+   Loading States
+   ==================================== */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.5s infinite;
+}
+
+@keyframes skeletonShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Spinner */
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-subtle);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ====================================
+   Hover Lift Effects
+   ==================================== */
+.hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* ====================================
+   Text Gradient Animation
+   ==================================== */
+.animated-gradient-text {
+    background: linear-gradient(
+        90deg,
+        var(--primary),
+        var(--accent-cyan),
+        var(--accent-pink),
+        var(--primary)
+    );
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 5s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ====================================
+   Border Glow Animation
+   ==================================== */
+.border-glow {
+    position: relative;
+}
+
+.border-glow::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(
+        45deg,
+        var(--primary),
+        var(--accent-cyan),
+        var(--accent-pink),
+        var(--primary)
+    );
+    background-size: 300% 300%;
+    animation: borderGlowRotate 4s linear infinite;
+    z-index: -1;
+    filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.border-glow:hover::before {
+    opacity: 1;
+}
+
+@keyframes borderGlowRotate {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ====================================
+   Typing Animation
+   ==================================== */
+.typing {
+    overflow: hidden;
+    border-right: 2px solid var(--primary);
+    white-space: nowrap;
+    animation:
+        typing 3s steps(30) 1s forwards,
+        blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+
+@keyframes blink {
+    50% { border-color: transparent; }
+}
+
+/* ====================================
+   Pulse Dot (for status indicators)
+   ==================================== */
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    position: relative;
+}
+
+.pulse-dot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    border-radius: 50%;
+    animation: pulseDotRing 1.5s ease-out infinite;
+}
+
+@keyframes pulseDotRing {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+/* ====================================
+   Reduced Motion Support
+   ==================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
