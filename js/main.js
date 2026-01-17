@@ -284,7 +284,7 @@ function initDemoModal() {
     if (!modal) return;
 
     // Open modal when clicking discovery call buttons
-    document.querySelectorAll('a[href="mailto:gabe@haus.video?subject=HausKloud%20Discovery%20Call"]').forEach(btn => {
+    document.querySelectorAll('a[href*="subject=HausKloud%20Discovery"]').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             modal.classList.add('active');
